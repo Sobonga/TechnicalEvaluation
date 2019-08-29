@@ -1,8 +1,13 @@
 package com.taskone;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,6 +18,9 @@ public class TaskOneApp {
     private JButton buttonCurrentDate;
     private JButton currentDateButton;
     private JButton daysBeforeChristmasButton;
+    private JButton loadCSVButton;
+    private JTable csvTable;
+    private JTextArea csvFile;
     Timer timer;
 
     public long daysBeforeXmas(Date one, Date two){
@@ -45,6 +53,35 @@ public class TaskOneApp {
 
                 DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 daysBeforeChristmasButton.setText("Days until Christmas:: "+days);
+
+                //Load CSV File
+                String filepath = "C:/Users/Documents/Sobz/1500000 Sales Records.csv";
+                File file = new File(filepath);
+
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    //get the first line
+                    //get the column name from the csv file
+                    String firstLine = br.readLine().trim();
+                    String[] columnsName = firstLine.split(",");
+
+                    DefaultTableModel model = (DefaultTableModel)csvTable.getModel();
+                    model.setColumnIdentifiers(columnsName);
+
+                    //get each line from the csv filr
+                    Object[] tableLines = br.lines().toArray();
+
+                    //get data from each line
+                    //set data to table model
+                    for(int i =0; i< tableLines.length; i++){
+                        String line = tableLines[i].toString().trim();
+                        String[] dataRows = line.split(",");
+                        model.addRow(dataRows);
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         };
 
